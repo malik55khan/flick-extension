@@ -1,0 +1,517 @@
+'use strict'
+var ObjectId = require('mongoose').Types.ObjectId;
+var crypto = require('crypto');
+var serverMessages = require('./tribe.message');
+var _ = require('lodash');
+var validator = require("email-validator");
+
+const Boom = require('boom');
+var tribeServiceProvider = require('./tribe.service');
+var sharedService = require('../../shared/shared.service');
+const createTribe = async (req, res, next) => {
+  try {
+    sharedService.resetErrors();
+    let isValidRequest = true;
+    var body = req.body;
+    if (_.isEmpty(body)) {
+      isValidRequest = false;
+      sharedService.setError('requestBody', 'Request body is empty');
+    }
+    if (_.isUndefined(body.tribeName) || _.isEmpty(body.tribeName)) {
+      isValidRequest = false;
+      sharedService.setError('tribeName', 'please enter Tribe name');
+    }
+    if (!isValidRequest) {
+      return res
+        .json({
+          code: 204,
+          status: 'failure',
+          data: sharedService.getErrors(),
+          message: serverMessages.ERROR_DEFAULT
+        });
+    }
+    body.tribeCreated = new Date();
+    body.customerId = ObjectId(req.access_token._id);
+    let tribe = await tribeServiceProvider.create(body);
+    res.status(200)
+      .json({
+        code: 200,
+        status: 'success',
+        data: tribe,
+        message: serverMessages.SUCCESS_ADDED
+      });
+  } catch (err) {
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+}
+const InviteMember = async (req, res, next) => {
+  try {
+    sharedService.resetErrors();
+    let isValidRequest = true;
+
+    var body = req.body;
+    if (_.isEmpty(body)) {
+      isValidRequest = false;
+      sharedService.setError('requestBody', 'Request body is empty');
+    }
+    if (_.isUndefined(req.params.tribeId) || _.isEmpty(req.params.tribeId)) {
+      isValidRequest = false;
+      sharedService.setError('tribeId', 'Tribe Id is missing in parametes');
+    }
+
+    if (!isValidRequest) {
+      return res
+        .json({
+          code: 204,
+          status: 'failure',
+          data: sharedService.getErrors(),
+          message: serverMessages.ERROR_DEFAULT
+        });
+    }
+    let conditions = {
+      _id: ObjectId(req.params.tribeId)
+    };
+
+    let code = 200;
+    let msg = "";
+    let status = 'failure';
+    body.invitedOn = new Date();
+    let data = await tribeServiceProvider.addMember(conditions, body);
+    if (data != null) {
+      code = 204;
+      status = 'success';
+      msg = serverMessages.SUCCESS_ADDED;
+    } else {
+      code = 204;
+      msg = serverMessages.ERROR_DEFAULT;
+    }
+
+
+    res.status(200)
+      .json({
+        code: code,
+        status: status,
+        data: data,
+        message: msg
+      });
+  } catch (err) {
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+
+}
+const addPost = async (req, res, next) => {
+  try {
+    sharedService.resetErrors();
+    let isValidRequest = true;
+
+    var body = req.body;
+    if (_.isEmpty(body)) {
+      isValidRequest = false;
+      sharedService.setError('requestBody', 'Request body is empty');
+    }
+    if (_.isUndefined(req.params.tribeId) || _.isEmpty(req.params.tribeId)) {
+      isValidRequest = false;
+      sharedService.setError('tribeId', 'Tribe Id is missing in parametes');
+    }
+
+    if (!isValidRequest) {
+      return res
+        .json({
+          code: 204,
+          status: 'failure',
+          data: sharedService.getErrors(),
+          message: serverMessages.ERROR_DEFAULT
+        });
+    }
+    let conditions = {
+      _id: ObjectId(req.params.tribeId)
+    };
+
+    let code = 200;
+    let msg = "";
+    let status = 'failure';
+
+    let data = await tribeServiceProvider.addPost(conditions, body);
+    if (data != null) {
+      code = 204;
+      status = 'success';
+      msg = serverMessages.SUCCESS_ADDED;
+    } else {
+      code = 204;
+      msg = serverMessages.ERROR_DEFAULT;
+    }
+
+
+    res.status(200)
+      .json({
+        code: code,
+        status: status,
+        data: data,
+        message: msg
+      });
+  } catch (err) {
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+
+}
+const updatePost = async (req, res, next) => {
+  try {
+    sharedService.resetErrors();
+    let isValidRequest = true;
+
+    var body = req.body;
+    if (_.isEmpty(body)) {
+      isValidRequest = false;
+      sharedService.setError('requestBody', 'Request body is empty');
+    }
+    if (_.isUndefined(req.params.tribeId) || _.isEmpty(req.params.tribeId)) {
+      isValidRequest = false;
+      sharedService.setError('tribeId', 'Tribe Id is missing in parametes');
+    }
+    if (_.isUndefined(req.params.postId) || _.isEmpty(req.params.postId)) {
+      isValidRequest = false;
+      sharedService.setError('postId', 'Post Id is missing in parametes');
+    }
+    if (!isValidRequest) {
+      return res
+        .json({
+          code: 204,
+          status: 'failure',
+          data: sharedService.getErrors(),
+          message: serverMessages.ERROR_DEFAULT
+        });
+    }
+    let conditions = {
+      _id: ObjectId(req.params.tribeId)
+    };
+    conditions['posts'] = { $elemMatch: { "_id": ObjectId(req.params.postId) } };
+    let code = 200;
+    let msg = "";
+    let status = 'failure';
+    let postData = {};
+    if (body.socialNetwork) {
+      postData["posts.$.socialNetwork"] = body.socialNetwork;
+    }
+    if (body.postUrl) {
+      postData["posts.$.postUrl"] = body.postUrl;
+    }
+    if (body.boostType) {
+      postData["posts.$.boostType"] = body.boostType;
+    }
+    if (body.boostCampaignStarts) {
+      postData["posts.$.boostCampaignStarts"] = body.boostCampaignStarts;
+    }
+    if (body.boostCampaignEnds) {
+      postData["posts.$.boostCampaignEnds"] = body.boostCampaignEnds;
+    }
+
+    let data = await tribeServiceProvider.updatePost(conditions, postData);
+    if (data != null) {
+      code = 204;
+      status = 'success';
+      msg = serverMessages.SUCCESS_UPDATED;
+    } else {
+      code = 204;
+      msg = serverMessages.ERROR_DEFAULT;
+    }
+
+
+    res.status(200)
+      .json({
+        code: code,
+        status: status,
+        data: data,
+        message: msg
+      });
+  } catch (err) {
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+
+}
+const removeMember = async (req, res, next) => {
+  try {
+    sharedService.resetErrors();
+    let isValidRequest = true;
+
+    if (_.isUndefined(req.params.tribeId) || _.isEmpty(req.params.tribeId)) {
+      isValidRequest = false;
+      sharedService.setError('tribeId', 'Tribe Id is missing in parametes');
+    }
+    if (_.isUndefined(req.params.memberId) || _.isEmpty(req.params.memberId)) {
+      isValidRequest = false;
+      sharedService.setError('memberId', 'Member Id is missing in parametes');
+    }
+
+    if (!isValidRequest) {
+      return res
+        .json({
+          code: 204,
+          status: 'failure',
+          data: sharedService.getErrors(),
+          message: serverMessages.ERROR_DEFAULT
+        });
+    }
+    let code = 200;
+    let msg = "";
+    let status = 'failure';
+
+    let data = await tribeServiceProvider.removeMember(ObjectId(req.params.tribeId), ObjectId(req.params.memberId));
+    if (data != null) {
+      code = 204;
+      status = 'success';
+      msg = serverMessages.SUCCESS_ADDED;
+    } else {
+      code = 204;
+      msg = serverMessages.ERROR_DEFAULT;
+    }
+
+
+    res.status(200)
+      .json({
+        code: code,
+        status: status,
+        data: data,
+        message: msg
+      });
+  } catch (err) {
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+
+}
+const acceptInvitition = async (req, res, next) => {
+  try {
+    sharedService.resetErrors();
+    let isValidRequest = true;
+    if (_.isUndefined(req.params.tribeId) || _.isEmpty(req.params.tribeId)) {
+      isValidRequest = false;
+      sharedService.setError('tribeId', 'Tribe Id is missing in parametes');
+    }
+    memberId = req.access_token._id;
+    if (!isValidRequest) {
+      return res
+        .json({
+          code: 204,
+          status: 'failure',
+          data: sharedService.getErrors(),
+          message: serverMessages.ERROR_DEFAULT
+        });
+    }
+    let conditions = {
+      _id: ObjectId(req.params.tribeId)
+    };
+    conditions['members'] = { $elemMatch: { "_id": ObjectId(memberId) } };
+    let code = 200;
+    let msg = "";
+    let status = 'failure';
+    let postData = {};
+    postData["members.$.status"] = "accepted";
+    postData["members.$.joinedOn"] = new Date();
+    console.log(postData);
+
+    let data = await tribeServiceProvider.updateMember(conditions, postData);
+    if (data != null) {
+      code = 204;
+      status = 'success';
+      msg = serverMessages.SUCCESS_UPDATED;
+    } else {
+      code = 204;
+      msg = serverMessages.ERROR_DEFAULT;
+    }
+
+
+    res.status(200)
+      .json({
+        code: code,
+        status: status,
+        data: data,
+        message: msg
+      });
+  } catch (err) {
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+
+}
+const removeMe = async (req, res, next) => {
+  try {
+    sharedService.resetErrors();
+    let isValidRequest = true;
+
+    if (_.isUndefined(req.params.tribeId) || _.isEmpty(req.params.tribeId)) {
+      isValidRequest = false;
+      sharedService.setError('tribeId', 'Tribe Id is missing in parametes');
+    }
+
+    if (!isValidRequest) {
+      return res
+        .json({
+          code: 204,
+          status: 'failure',
+          data: sharedService.getErrors(),
+          message: serverMessages.ERROR_DEFAULT
+        });
+    }
+    let code = 200;
+    let msg = "";
+    let status = 'failure';
+    let memberId = ObjectId(req.access_token._id);
+    let data = await tribeServiceProvider.removeMember(ObjectId(req.params.tribeId), memberId);
+    if (data != null) {
+      code = 204;
+      status = 'success';
+      msg = serverMessages.SUCCESS_ADDED;
+    } else {
+      code = 204;
+      msg = serverMessages.ERROR_DEFAULT;
+    }
+
+
+    res.status(200)
+      .json({
+        code: code,
+        status: status,
+        data: data,
+        message: msg
+      });
+  } catch (err) {
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+}
+const getCustomerTribe = async (req, res) => {
+  try {
+    
+    let conditions = {
+      query : {
+        customerId: ObjectId(req.access_token._id)
+      }
+    }
+    let aggreate = sharedService.bindQuery(conditions);
+    //aggreate.push({$project:{tribeName:1}});
+    var data = await tribeServiceProvider.getAll(aggreate);
+    res.status(200)
+      .json({
+        code: 200,
+        status: "success",
+        data: data,
+        message: serverMessages.SUCCESS_FOUND
+      });
+  } catch (err) {
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+}
+const getCustomerTribeById = async (req, res) => {
+  try {
+    sharedService.resetErrors();
+    let isValidRequest = true;
+    if (_.isUndefined(req.params.tribeId) || _.isEmpty(req.params.tribeId)) {
+      isValidRequest = false;
+      sharedService.setError('tribeId', 'Tribe Id is missing in parametes');
+    }
+    if (!isValidRequest) {
+      return res
+        .json({
+          code: 204,
+          status: 'failure',
+          data: sharedService.getErrors(),
+          message: serverMessages.ERROR_DEFAULT
+        });
+    }
+    console.log(req.params);  
+    let conditions = {
+      query : {
+        customerId: ObjectId(req.access_token._id),
+        _id: ObjectId(req.params.tribeId)
+      }
+    }
+    var data = await tribeServiceProvider.getAll(sharedService.bindQuery(conditions));
+    res.status(200)
+      .json({
+        code: 200,
+        status: "success",
+        data: data,
+        message: serverMessages.SUCCESS_FOUND
+      });
+  } catch (err) {
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+}
+const getCustomerTribeMembers = async (req, res) => {
+  try {
+    sharedService.resetErrors();
+    let isValidRequest = true;
+    if (_.isUndefined(req.params.tribeId) || _.isEmpty(req.params.tribeId)) {
+      isValidRequest = false;
+      sharedService.setError('tribeId', 'Tribe Id is missing in parametes');
+    }
+    if (!isValidRequest) {
+      return res
+        .json({
+          code: 204,
+          status: 'failure',
+          data: sharedService.getErrors(),
+          message: serverMessages.ERROR_DEFAULT
+        });
+    }
+    
+    let conditions = {
+      query : {
+        customerId: ObjectId(req.access_token._id),
+        _id: ObjectId(req.params.tribeId)
+      }
+    }
+    if(req.query.status){
+      conditions.query.status = req.query.status; 
+    }
+    var data = await tribeServiceProvider.getAll(sharedService.bindQuery(conditions),{members:1});
+    res.status(200)
+      .json({
+        code: 200,
+        status: "success",
+        data: data,
+        message: serverMessages.SUCCESS_FOUND
+      });
+  } catch (err) {
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+}
+module.exports = {
+  createTribe: createTribe,
+  getCustomerTribe: getCustomerTribe,
+  getCustomerTribeMembers:getCustomerTribeMembers,
+  getCustomerTribeById: getCustomerTribeById,
+  InviteMember: InviteMember,
+  addPost: addPost,
+  updatePost: updatePost,
+  removeMember: removeMember,
+  removeMe: removeMe,
+  acceptInvitition: acceptInvitition
+};

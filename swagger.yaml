@@ -1,0 +1,391 @@
+---
+info:
+  title: Node Swagger API
+  version: 1.0.1
+  description: Demonstrating how to desribe a RESTful API with Swagger
+host: localhost:3000
+basePath: "/"
+swagger: '2.0'
+paths:
+  "/api/users/register":
+    post:
+      tags:
+      - Users
+      description: Creates a new user
+      produces:
+      - application/json
+      parameters:
+      - name: body
+        description: User object
+        in: body
+        required: true
+        schema:
+          "$ref": "#/definitions/Register"
+      responses:
+        '200':
+          description: Successfully created
+        '204':
+          description: Request body is empty or some parameters are missing
+  "/api/users/login":
+    post:
+      tags:
+      - Users
+      description: user login
+      produces:
+      - application/json
+      parameters:
+      - name: body
+        description: User object
+        in: body
+        required: true
+        schema:
+          "$ref": "#/definitions/Login"
+      responses:
+        '200':
+          description: Login successfully!
+        '204':
+          description: Request body is empty or some parameters are missing
+  "/api/users/{id}":
+    put:
+      tags:
+      - Users
+      description: Updates a single user
+      securityDefinitions:
+        bearerAuth: 
+        type: http
+        scheme: bearer
+        bearerFormat: JWT
+        name: Authorization
+        in: header
+      produces:
+      - application/json
+      parameters:
+      - name: id
+        description: User's id
+        in: path
+        required: true
+        type: string
+      - name: user
+        description: User object
+        in: body
+        required: true
+        schema:
+          "$ref": "#/definitions/UserObject"
+      responses:
+        '200':
+          description: Successfully updated
+  "/api/tribes":
+    get:
+      security:
+      - Bearer: []
+      tags:
+      - Tribes
+      description: Get all tribe of a customer
+      produces:
+      - application/json
+      parameters:
+        description: Tribe object
+        schema:
+          "$ref": "#/definitions/Tribe"
+      responses:
+        '200':
+          description: Successfully created
+        '204':
+          description: Request body is empty or some parameters are missing
+    post:
+      tags:
+      - Tribes
+      description: Creates a new tribe
+      produces:
+      - application/json
+      parameters:
+      - name: body
+        description: Tribe object
+        in: body
+        required: true
+        schema:
+          "$ref": "#/definitions/Tribe"
+      responses:
+        '200':
+          description: Successfully created
+        '204':
+          description: Tribe id missing
+  "/api/tribes/{tribeId}":
+    get:
+      security:
+      - Bearer: []
+      tags:
+      - Tribes
+      description: Get single tribe of a customer
+      produces:
+      - application/json
+      parameters:
+      - name: tribeId
+        in: path
+        required: true
+        type: string
+        description: Tribe object
+        schema:
+          "$ref": "#/definitions/Tribe"
+      responses:
+        '200':
+          description: Successfully created
+        '204':
+          description: Tribe id is missing
+  "/api/tribes/{tribeId}/members":
+    get:
+      security:
+      - Bearer: []
+      tags:
+      - Tribes
+      description: Get tribe members of a customer
+      produces:
+      - application/json
+      parameters:
+      - name: tribeId
+        in: path
+        required: true
+        type: string
+        description: Tribe object
+        schema:
+          "$ref": "#/definitions/Tribe"
+      responses:
+        '200':
+          description: Successfully created
+        '204':
+          description: Tribe id is missing
+    post:
+      security:
+      - Bearer: []
+      tags:
+      - Tribes
+      description: invite a new member to the tribe
+      produces:
+      - application/json
+      parameters:
+      - name: tribeId
+        in: path
+        required: true
+        type: string
+      - name: body
+        in: body
+        description: Tribe object
+        schema:
+          "$ref": "#/definitions/Member"
+      responses:
+        '200':
+          description: Successfully created
+        '204':
+          description: Tribe id is missing
+    put:
+      security:
+      - Bearer: []
+      tags:
+      - Tribes
+      description: accept invitation to join the tribe
+      produces:
+      - application/json
+      parameters:
+      - name: tribeId
+        in: path
+        required: true
+        type: string
+      responses:
+        '200':
+          description: Successfully created
+        '204':
+          description: Tribe id is missing
+    delete:
+      security:
+      - Bearer: []
+      tags:
+      - Tribes
+      description: remove me from the tribe //Members on extensions
+      produces:
+      - application/json
+      parameters:
+      - name: tribeId
+        in: path
+        required: true
+        type: string
+      responses:
+        '200':
+          description: Successfully created
+        '204':
+          description: Tribe id, memberId is missing
+  "/api/tribes/{tribeId}/posts":
+    post:
+      security:
+      - Bearer: []
+      tags:
+      - Tribes
+      description: add a new post to the tribe
+      produces:
+      - application/json
+      parameters:
+      - name: tribeId
+        in: path
+        required: true
+        type: string
+      - name: body
+        in: body
+        description: Post object
+        schema:
+          "$ref": "#/definitions/Posts"
+      responses:
+        '200':
+          description: Successfully created
+        '204':
+          description: Tribe id is missing
+  "/api/tribes/{tribeId}/posts/{:postId}":
+    post:
+      security:
+      - Bearer: []
+      tags:
+      - Tribes
+      description: update of post by customer
+      produces:
+      - application/json
+      parameters:
+      - name: tribeId
+        in: path
+        required: true
+        type: string
+      - name: postId
+        in: path
+        required: true
+        type: string
+      - name: body
+        in: body
+        description: Post object
+        schema:
+          "$ref": "#/definitions/Posts"
+      responses:
+        '200':
+          description: Successfully created
+        '204':
+          description: Tribe id postId is missing
+  "/api/tribes/{tribeId}/members/{:memberId}":
+    delete:
+      security:
+      - Bearer: []
+      tags:
+      - Tribes
+      description: accept invitation to join the tribe
+      produces:
+      - application/json
+      parameters:
+      - name: tribeId
+        in: path
+        required: true
+        type: string
+      - name: memberId
+        in: path
+        required: true
+        type: string
+      responses:
+        '200':
+          description: Successfully created
+        '204':
+          description: Tribe id, memberId is missing
+definitions:
+  Register:
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      country:
+        type: string
+      vatNumber:
+        type: string
+      profileImage:
+        type: string
+  GetUser:
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      isEnable:
+        type: boolean
+      isDeleted:
+        type: boolean
+      country:
+        type: string
+      vatNumber:
+        type: string
+      profileImage:
+        type: string
+  Login:
+    properties:
+      email:
+        type: string
+        required: true
+      password:
+        type: string
+        required: true
+  UserObject:
+    properties:
+      name:
+        type: string
+        required: true
+      email:
+        type: string
+        required: true
+      password:
+        type: string
+        required: true
+      country:
+        type: string
+      vatNumber:
+        type: string
+        required: true
+      profileImage:
+        type: string
+  Tribe:
+    properties:
+      tribeName:
+        type: string
+        required: true
+  Member:
+    properties:
+      userEmailAddress:
+        type: string
+        required: true
+      userPhoneNumber:
+        type: string
+        required: true
+      status:
+        type: string
+        required: true
+  Posts:
+    properties:
+      socialNetwork:
+        type: string
+        required: true
+      postUrl:
+        type: string
+        required: true
+      boostType:
+        type: string
+        required: true
+      boostCampaignStarts:
+        type: string
+        required: true
+      boostCampaignEnds:
+        type: string
+        required: true
+responses: {}
+parameters: {}
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+tags: []
+

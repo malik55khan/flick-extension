@@ -1,0 +1,100 @@
+const Tribe = require('./tribe.modal');
+
+exports.create = body => {
+    return new Promise((resolve, reject) => {
+      Tribe.create(body, (err, user) => {
+          if (err) {
+              return reject(err);
+          } else {
+              resolve(user);
+          }
+        });
+      });
+}
+exports.addMember = (conditions={},body,isLean=false) =>{
+  return new Promise((resolve, reject) => {
+    let Obj = Tribe.findOneAndUpdate(conditions,{$push:{members:body}});
+    if(isLean){
+      Obj.lean();
+    }
+    Obj.exec((err, data) => {
+        if (err) {
+          return reject(err);
+        } else {
+          resolve(data);
+        }
+    });
+  });
+}
+exports.removeMember = (tribeId,memberId) =>{
+  return new Promise((resolve, reject) => {
+    let Obj = Tribe.findByIdAndUpdate(tribeId,{$pull:{"members":{_id:memberId}}},{new:true});
+    
+    Obj.exec((err, data) => {
+        if (err) {
+          return reject(err);
+        } else {
+          resolve(data);
+        }
+    });
+  });
+}
+
+exports.addPost = (conditions={},body,isLean=false) =>{
+  return new Promise((resolve, reject) => {
+    let Obj = Tribe.findOneAndUpdate(conditions,{$push:{posts:body}});
+    if(isLean){
+      Obj.lean();
+    }
+    Obj.exec((err, data) => {
+        if (err) {
+          return reject(err);
+        } else {
+          resolve(data);
+        }
+    });
+  });
+}
+exports.updatePost = (conditions={},body,isLean=false) =>{
+  return new Promise((resolve, reject) => {
+    let Obj = Tribe.findOneAndUpdate(conditions,{$set:body},{new : true}).select({"posts": 1});
+    if(isLean){
+      Obj.lean();
+    }
+    Obj.exec((err, data) => {
+        if (err) {
+          return reject(err);
+        } else {
+          resolve(data);
+        }
+    });
+  });
+}
+exports.updateMember = (conditions={},body,isLean=false) =>{
+  return new Promise((resolve, reject) => {
+    let Obj = Tribe.findOneAndUpdate(conditions,{$set:body},{new : true}).select({"members": 1});
+    if(isLean){
+      Obj.lean();
+    }
+    Obj.exec((err, data) => {
+        if (err) {
+          return reject(err);
+        } else {
+          resolve(data);
+        }
+    });
+  });
+}
+
+
+exports.getAll = (aggregate) => {
+  return new Promise((resolve, reject) => {
+    Tribe.aggregate(aggregate).exec((err, data) => {
+        if (err) {
+          return reject(err);
+        } else {
+          resolve(data);
+        }
+    });
+  }); 
+}
