@@ -2,11 +2,12 @@
 var mongoose = require('mongoose');
 const config = require('../config');
 exports.connect = function () {
-    mongoose.connect(config.mongoUrl,{ useNewUrlParser: true });
+    let mongoUrl = `mongodb+srv://flick:r0j2rtxDe1oRVy7s@unchainedcarrot-le6vd.mongodb.net/test?retryWrites=true&w=majority`;
+    mongoose.connect(mongoUrl,{ useNewUrlParser: true });
     const db = mongoose.connection;
     db.once(`open`, function () {
       // we`re connected!
-      console.log(`MongoDB connected on "  ${config.mongoUrl}`);
+      console.log(`MongoDB connected on "  ${mongoUrl}`);
       console.log(`###########################################################################`);
     });
     db.on('connected', function () {
