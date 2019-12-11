@@ -1,5 +1,6 @@
  var defaultConfig = {
-  mongoUrl: `mongodb://localhost:27017/flick-db`,
+  secretKey: `86(23494-)8923-flick-489SU((*&uih`,
+  mongoUrl: `mongodb+srv://flick:r0j2rtxDe1oRVy7s@unchainedcarrot-le6vd.mongodb.net/test?retryWrites=true&w=majority`,
   port:3000,
   jwtSecret: `flick(!@$#^IsAwesome`,
   s3: {
