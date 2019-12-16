@@ -13,6 +13,7 @@ exports.create = body => {
 }
 exports.addMember = (conditions={},body,isLean=false) =>{
   return new Promise((resolve, reject) => {
+    conditions.isDeleted = false;
     let Obj = Tribe.findOneAndUpdate(conditions,{$push:{members:body}});
     if(isLean){
       Obj.lean();
@@ -43,6 +44,21 @@ exports.removeMember = (tribeId,memberId) =>{
 exports.addPost = (conditions={},body,isLean=false) =>{
   return new Promise((resolve, reject) => {
     let Obj = Tribe.findOneAndUpdate(conditions,{$push:{posts:body}});
+    if(isLean){
+      Obj.lean();
+    }
+    Obj.exec((err, data) => {
+        if (err) {
+          return reject(err);
+        } else {
+          resolve(data);
+        }
+    });
+  });
+}
+exports.updateTribe = (conditions={},body,isLean=false) =>{
+  return new Promise((resolve, reject) => {
+    let Obj = Tribe.findOneAndUpdate(conditions,{$set:body});
     if(isLean){
       Obj.lean();
     }

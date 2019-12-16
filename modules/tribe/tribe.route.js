@@ -320,4 +320,28 @@ router.route('/:tribeId/members/:memberId').delete(jwt.isAuthorizedToken, tribeC
  */
 router.route(`/:tribeId/members`).delete(jwt.isAuthorizedToken,tribeCtrl.removeMe); //- remove me from the tribe
 
+/**
+* @swagger
+ * /api/tribes/{tribeId}:
+ *   delete:
+ *     security:
+ *       - Bearer: []
+ *     tags:
+ *       - Tribes
+ *     description: remove me from the tribe //Members on extensions
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: tribeId
+ *         in: path
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Successfully deleted
+ *       204:
+ *         description: Tribe id is missing 
+ */
+router.route(`/:tribeId`).delete(jwt.isAuthorizedToken,tribeCtrl.deleteTribe); //- remove me from the tribe
+
 module.exports = router;

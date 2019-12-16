@@ -9,6 +9,7 @@ module.exports = {
     SUCCESS_UPDATED: `Users Updated Successfully`,
       
     ERROR_LOGIN: `Something went wrong while login.`,
+    ERROR_EMAIL_EXISTS: `Email already exists.`,
     ERROR_CAN_NOT_LOGIN: `Account is not activated`,
     ERROR_FINDING_USER: `Something went wrong while finding user`,
     ERROR_GET_USERDATA: `Something went wrong while getting data`,

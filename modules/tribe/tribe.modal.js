@@ -6,8 +6,10 @@ var userSchema = new mongoose.Schema({
 
     customerId : {type: mongoose.Schema.Types.ObjectId, ref: 'users'},
     tribeName : {type: String,required:"Tribe name is required"},
+    tribeDescription : {type: String},
     tribeCreated : {type: Date},
     tribeActive : {type:Boolean,default:true},
+    isDeleted : {type:Boolean,default:false},
     members : [
       {
         userId :  {type: mongoose.Schema.Types.ObjectId},

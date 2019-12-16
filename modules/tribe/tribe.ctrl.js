@@ -13,6 +13,7 @@ const createTribe = async (req, res, next) => {
     sharedService.resetErrors();
     let isValidRequest = true;
     var body = req.body;
+    console.log(body);
     if (_.isEmpty(body)) {
       isValidRequest = false;
       sharedService.setError('requestBody', 'Request body is empty');
@@ -349,6 +350,40 @@ const acceptInvitition = async (req, res, next) => {
   }
 
 }
+const deleteTribe = async (req,res,next) =>{
+  try{
+    sharedService.resetErrors();
+    let isValidRequest = true;
+
+    if (_.isUndefined(req.params.tribeId) || _.isEmpty(req.params.tribeId)) {
+      isValidRequest = false;
+      sharedService.setError('tribeId', 'Tribe Id is missing in parametes');
+    }
+    if (!isValidRequest) {
+      return res
+        .json({
+          code: 204,
+          status: 'failure',
+          data: sharedService.getErrors(),
+          message: serverMessages.ERROR_DEFAULT
+        });
+    }
+    let tribeId = ObjectId(req.params.tribeId);
+    let data = await tribeServiceProvider.updateTribe({_id:tribeId},{isDeleted:true});
+    res.status(200)
+      .json({
+        code: 200,
+        status: "success",
+        data: data,
+        message: serverMessages.SUCCESS_DELETE
+      });
+  }catch(err){
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+}
 const removeMe = async (req, res, next) => {
   try {
     sharedService.resetErrors();
@@ -402,7 +437,8 @@ const getCustomerTribe = async (req, res) => {
     
     let conditions = {
       query : {
-        customerId: ObjectId(req.access_token._id)
+        customerId: ObjectId(req.access_token._id),
+        isDeleted : false,
       }
     }
     let aggreate = sharedService.bindQuery(conditions);
@@ -513,5 +549,6 @@ module.exports = {
   updatePost: updatePost,
   removeMember: removeMember,
   removeMe: removeMe,
+  deleteTribe:deleteTribe,
   acceptInvitition: acceptInvitition
 };

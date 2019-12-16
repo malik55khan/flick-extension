@@ -49,6 +49,15 @@ const register = async(req, res, next) => {
         message: serverMessages.ERROR_GET_USERDATA
       });
     }
+    let isExists = await userServiceProvider.getOne({email:body.email});
+    if(isExists){
+      return res.status(201)
+      .json({
+        code:201,
+        status: 'failure',
+        message: serverMessages.ERROR_EMAIL_EXISTS
+      });
+    }
     let user = await userServiceProvider.create(body);
     res.status(200)
         .json({
@@ -60,7 +69,12 @@ const register = async(req, res, next) => {
   }catch(err){
     console.log(err);
     if (err) {
-      return next(Boom.badImplementation(err.message));
+      return res.status(201)
+      .json({
+        code:201,
+        status: 'failure',
+        message: err.message
+      });
     }
   }
 }
@@ -108,7 +122,7 @@ const login = async (req, res, next) => {
       user = await userServiceProvider.getOne({email:body.email,password:password},{isActive:1,name:1,country:1,email:1,vatNumber:1,role:1},true);
       if(user!=null){
         if(user.isActive){
-          code = 204;
+          code = 200;
           status = 'success';
           let token = userServiceProvider.generateJwt(user);
           user = _.extend({},user,{jwt:token});
