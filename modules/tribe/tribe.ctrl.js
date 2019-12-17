@@ -106,6 +106,9 @@ const InviteMember = async (req, res, next) => {
   }
 
 }
+const inviteLink  = async (req,res) =>{
+  res.render('index', { title: 'Express' });
+}
 const addPost = async (req, res, next) => {
   try {
     sharedService.resetErrors();
@@ -140,7 +143,7 @@ const addPost = async (req, res, next) => {
 
     let data = await tribeServiceProvider.addPost(conditions, body);
     if (data != null) {
-      code = 204;
+      code = 200;
       status = 'success';
       msg = serverMessages.SUCCESS_ADDED;
     } else {
@@ -550,5 +553,6 @@ module.exports = {
   removeMember: removeMember,
   removeMe: removeMe,
   deleteTribe:deleteTribe,
-  acceptInvitition: acceptInvitition
+  acceptInvitition: acceptInvitition,
+  inviteLink:inviteLink
 };

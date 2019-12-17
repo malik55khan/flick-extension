@@ -169,6 +169,6 @@ router.post('/login', db.login);
  *         description: Successfully updated
  */
 router.put('/:id',jwt.isAuthorizedToken, db.updateUser);
-
+router.post('/login-with-social', db.loginWithSocial)
 
 module.exports = router;

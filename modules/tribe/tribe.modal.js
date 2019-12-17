@@ -24,6 +24,7 @@ var userSchema = new mongoose.Schema({
     posts : [
       {
         socialNetwork : {type:String},
+        postName : {type:String},
         postUrl : {type:String},
         boostType : {type:String},
         boostCampaignStarts : {type:Date},

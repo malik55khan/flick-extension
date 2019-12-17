@@ -72,7 +72,7 @@ var jwt = require('../../config/jwToken');
  *   name: Authorization
  *   in: header
  */
-router.route('/').get(jwt.isAuthorizedToken,tribeCtrl.getCustomerTribe);// Get Customer Tribes
+router.route('/').get(jwt.isAuthorizedToken,tribeCtrl.getCustomerTribe);// Get Customer All Tribes
 /**
 * @swagger
  * /api/tribes/{tribeId}:
@@ -98,8 +98,31 @@ router.route('/').get(jwt.isAuthorizedToken,tribeCtrl.getCustomerTribe);// Get C
  *       204:
  *         description: Tribe id is missing 
  */
-router.route('/:tribeId').get(jwt.isAuthorizedToken,tribeCtrl.getCustomerTribeById);// Get Customer Tribes
+router.route('/:tribeId').get(jwt.isAuthorizedToken,tribeCtrl.getCustomerTribeById);// Get Customer Single Tribes
 
+/**
+* @swagger
+ * /api/tribes/invite{tribeId}:
+ *   get:
+ *     tags:
+ *       - Tribes
+ *     description: Tribe invitation link
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: tribeId
+ *         in: path
+ *         required: true
+ *         type: string
+ *         schema:
+ *           $ref: '#/definitions/Tribe'
+ *     responses:
+ *       200:
+ *         description: Successfully created
+ *       204:
+ *         description: Tribe id is missing 
+ */
+router.route('/invite/:tribeId').get(tribeCtrl.inviteLink);// Tribe invitation link
 /**
 * @swagger
  * /api/tribes/{tribeId}/members:

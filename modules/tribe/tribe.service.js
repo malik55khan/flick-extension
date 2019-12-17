@@ -43,7 +43,7 @@ exports.removeMember = (tribeId,memberId) =>{
 
 exports.addPost = (conditions={},body,isLean=false) =>{
   return new Promise((resolve, reject) => {
-    let Obj = Tribe.findOneAndUpdate(conditions,{$push:{posts:body}});
+    let Obj = Tribe.findOneAndUpdate(conditions,{$push:{posts:body}},{new:true});
     if(isLean){
       Obj.lean();
     }

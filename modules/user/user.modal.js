@@ -6,13 +6,14 @@ var userSchema = new mongoose.Schema({
 
     name: {type: String},
     email: {type: String,  required: 'Please enter the email'},
+    nickname: {type: String},
     password: {type: String, select: false},
     salt:{type: String},
     phoneNumber:{type:String},
     country: {type: String},
     vatNumber: {type: String},
     role:{type:String,enum:["admin","customer",'member'],default:"member"},
-    profileImage: {type: String},
+    picture: {type: String},
     isActive: {type: Boolean, default: true}, // enable/disable user login
     isDeleted:{type: Boolean, default: false},
     isAdmin:{type: Boolean, default: false}

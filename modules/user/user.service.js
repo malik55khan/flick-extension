@@ -4,6 +4,9 @@ var CONFIG = require('../../config/index');
 var jwt = require('jsonwebtoken');
 exports.create = body => {
     return new Promise((resolve, reject) => {
+      if(_.isUndefined(body.nickname) || _.isEmpty(body.nickname)){
+        body.nickname = body.email.split('@')[0];
+      }
         User.create(body, (err, user) => {
           if (err) {
               return reject(err);

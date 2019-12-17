@@ -79,6 +79,28 @@ const register = async(req, res, next) => {
   }
 }
 
+const loginWithSocial = async(req,res,next)=>{
+  try{
+    var body = req.body;
+    body.email = (body.email).toLowerCase();
+    let user = await userServiceProvider.getOne({email:body.email},{salt:1},true);
+    if(user == null){
+      user = await userServiceProvider.create(body);
+      user = user.toObject();
+    }
+    let token = userServiceProvider.generateJwt(user);
+    user = _.extend({},user,{jwt:token});
+    res.status(200)
+        .json({
+          code:200,
+          status: "success",
+          data: user,
+          message: "success"
+        });
+  }catch(err){
+    console.log(err);
+  }
+}
 
 const login = async (req, res, next) => {
   try{
@@ -207,5 +229,6 @@ const updateUser = async(req,res)=>{
 module.exports = {
   register: register,
   login:login,
-  updateUser:updateUser
+  updateUser:updateUser,
+  loginWithSocial:loginWithSocial
 };
