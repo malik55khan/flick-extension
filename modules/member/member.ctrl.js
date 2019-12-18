@@ -8,6 +8,35 @@ var validator = require("email-validator");
 const Boom = require('boom');
 var tribeServiceProvider = require('../tribe/tribe.service');
 var sharedService = require('../../shared/shared.service');
+const getMyTribes = async (req, res, next) => {
+  try {
+    let memberId = ObjectId(req.access_token._id);
+    let conditions = {
+      query:{
+        'members.userId':memberId
+      }
+    };
+    if(req.query.status){
+      conditions.query.tribeActive = req.query.status == 'true' ? true : false;
+    }
+    let aggregate = sharedService.bindQuery(conditions);
+    console.log(aggregate);
+    let data = await tribeServiceProvider.getAll(aggregate);
+    console.log(data)
+    res.status(200)
+      .json({
+        code: 200,
+        status: "success",
+        data: data,
+        message: serverMessages.SUCCESS_FOUND
+      });
+  }catch(err){
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+}
 const getMemberTribe = async (req, res, next) => {
   try {
     sharedService.resetErrors();
@@ -29,7 +58,7 @@ const getMemberTribe = async (req, res, next) => {
     let memberId = ObjectId(req.params.memberId);
     let conditions = {
       query:{
-        'members._id':memberId
+        'members.userId':memberId
       }
     };
     if(req.query.status){
@@ -38,11 +67,51 @@ const getMemberTribe = async (req, res, next) => {
     let aggregate = sharedService.bindQuery(conditions);
     console.log(aggregate);
     let data = await tribeServiceProvider.getAll(aggregate);
+    
     res.status(200)
       .json({
         code: 200,
         status: "success",
         data: data,
+        message: serverMessages.SUCCESS_FOUND
+      });
+  }catch(err){
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+}
+const getMyPosts= async (req, res, next) => {
+  try {
+    let memberId = ObjectId(req.access_token._id);
+    let conditions = {
+      query:{
+        'posts.boostActivity.userId':memberId
+      }
+    };
+    if(req.query.status){
+      //conditions.query.tribeActive = req.query.status == 'true' ? true : false;
+    }
+    let aggregate = sharedService.bindQuery(conditions);
+    let filteredPosts = [];
+    let data = await tribeServiceProvider.getAll(aggregate);
+    let posts = await _.forEach(data,async (record,i)=>{
+      await _.forEach(record.posts,async (post,j)=>{
+        let boostActivity =  _.filter(post.boostActivity,(boostActivity)=>{
+             return boostActivity.userId.toString() == req.access_token._id
+        });
+        if(boostActivity.length){
+          post.tribeId = record._id;
+          filteredPosts.push(post);
+        }
+      });
+    });
+    res.status(200)
+      .json({
+        code: 200,
+        status: "success",
+        data: filteredPosts,
         message: serverMessages.SUCCESS_FOUND
       });
   }catch(err){
@@ -98,5 +167,7 @@ const getMemberPosts = async (req, res, next) => {
 }
 module.exports = {
   getMemberTribe: getMemberTribe,
-  getMemberPosts:getMemberPosts
+  getMyTribes:getMyTribes,
+  getMemberPosts:getMemberPosts,
+  getMyPosts:getMyPosts
 };

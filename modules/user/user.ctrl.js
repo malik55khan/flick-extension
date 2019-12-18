@@ -83,11 +83,12 @@ const loginWithSocial = async(req,res,next)=>{
   try{
     var body = req.body;
     body.email = (body.email).toLowerCase();
-    let user = await userServiceProvider.getOne({email:body.email},{salt:1},true);
+    let user = await userServiceProvider.getOne({email:body.email},{},true);
     if(user == null){
       user = await userServiceProvider.create(body);
       user = user.toObject();
     }
+    
     let token = userServiceProvider.generateJwt(user);
     user = _.extend({},user,{jwt:token});
     res.status(200)
