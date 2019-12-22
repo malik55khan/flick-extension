@@ -3,12 +3,14 @@ const userRoute = require('../modules/user/user.route');
 const tribeRoute = require('../modules/tribe/tribe.route');
 const memberRoute = require('../modules/member/member.route');
 const tribeCtrl = require('../modules/tribe/tribe.ctrl');
+const notificationRoute = require('../modules/notification/notification.route');
 module.exports = function (app) {
  
   const router = express.Router();
   router.use(`/users`, userRoute);
   router.use(`/tribes`,tribeRoute);
   router.use(`/members`,memberRoute);
+  router.use(`/notifications`,notificationRoute);
   app.use(`/api`, router);
   app.get('/api', (req, res) => {
     res.json({

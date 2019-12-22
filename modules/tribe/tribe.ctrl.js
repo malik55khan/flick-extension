@@ -4,7 +4,7 @@ var crypto = require('crypto');
 var serverMessages = require('./tribe.message');
 var _ = require('lodash');
 var validator = require("email-validator");
-
+var notiService = require('../notification/notification.service');
 const Boom = require('boom');
 var tribeServiceProvider = require('./tribe.service');
 var sharedService = require('../../shared/shared.service');
@@ -75,11 +75,17 @@ const InviteMember = async (req, res, next) => {
     let conditions = {
       _id: ObjectId(req.params.tribeId)
     };
-
+    let tribe = await tribeServiceProvider.getOne(conditions);
     let code = 200;
     let msg = "";
     let status = 'failure';
     body.invitedOn = new Date();
+    body.status = "accepted";
+    let notification = {
+      userId:ObjectId(body.userId),
+      notification:"You have new invitation to join group "+tribe.tribeName
+    }
+    await notiService.create(notification);
     let data = await tribeServiceProvider.addMember(conditions, body);
     if (data != null) {
       code = 204;

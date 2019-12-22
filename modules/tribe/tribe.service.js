@@ -101,7 +101,21 @@ exports.updateMember = (conditions={},body,isLean=false) =>{
     });
   });
 }
-
+exports.getOne = (conditions={},projection={},isLean=false) => {
+  return new Promise((resolve, reject) => {
+      let userObj = Tribe.findOne(conditions,projection);
+      if(isLean){
+        userObj.lean();
+      }
+      userObj.exec((err, user) => {
+          if (err) {
+            return reject(err);
+          } else {
+            resolve(user);
+          }
+      });
+    });
+}
 
 exports.getAll = (aggregate) => {
   return new Promise((resolve, reject) => {
