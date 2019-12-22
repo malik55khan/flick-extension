@@ -19,7 +19,7 @@ var swaggerDefinition = {
     version: '1.0.1',
     description: 'Demonstrating how to desribe a RESTful API with Swagger',
   },
-  host: 'https://flickextension.herokuapp.com',
+  host: 'flickextension.herokuapp.com',
   basePath: '/',
 };
 
