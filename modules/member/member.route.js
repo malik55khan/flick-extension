@@ -8,4 +8,5 @@ router.route(`/:memberId/tribes`).get(jwt.isAuthorizedToken,memberCtrl.getMember
 router.route(`/:memberId/posts`).get(memberCtrl.getMemberPosts); //- get a list of posts to boost 
 router.route(`/tribes`).get(jwt.isAuthorizedToken,memberCtrl.getMyTribes); //- get a list of tribes that member belongs to
 router.route(`/posts`).get(jwt.isAuthorizedToken,memberCtrl.getMyPosts); //- get a list of tribes that member belongs to
+router.route(`/tribe/:tribeId`).get(jwt.isAuthorizedToken,memberCtrl.getTribe);
 module.exports = router;

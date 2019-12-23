@@ -14,7 +14,7 @@ exports.create = body => {
 exports.addMember = (conditions={},body,isLean=false) =>{
   return new Promise((resolve, reject) => {
     conditions.isDeleted = false;
-    let Obj = Tribe.findOneAndUpdate(conditions,{$push:{members:body}});
+    let Obj = Tribe.findOneAndUpdate(conditions,{$push:{members:body}},{new:true});
     if(isLean){
       Obj.lean();
     }
@@ -88,7 +88,7 @@ exports.updatePost = (conditions={},body,isLean=false) =>{
 }
 exports.updateMember = (conditions={},body,isLean=false) =>{
   return new Promise((resolve, reject) => {
-    let Obj = Tribe.findOneAndUpdate(conditions,{$set:body},{new : true}).select({"members": 1});
+    let Obj = Tribe.findOneAndUpdate(conditions,{$set:body},{new : true});//.select({"members": 1});
     if(isLean){
       Obj.lean();
     }

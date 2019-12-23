@@ -52,7 +52,7 @@ const InviteMember = async (req, res, next) => {
   try {
     sharedService.resetErrors();
     let isValidRequest = true;
-
+    console.log(req.body)
     var body = req.body;
     if (_.isEmpty(body)) {
       isValidRequest = false;
@@ -80,15 +80,20 @@ const InviteMember = async (req, res, next) => {
     let msg = "";
     let status = 'failure';
     body.invitedOn = new Date();
-    body.status = "accepted";
+    body.status = "invited";
     let notification = {
       userId:ObjectId(body.userId),
       notification:"You have new invitation to join group "+tribe.tribeName
     }
+    let isInvited = await tribeServiceProvider.getOne({_id:ObjectId(req.params.tribeId),"members.userId":ObjectId(req.body.userId)});
     await notiService.create(notification);
-    let data = await tribeServiceProvider.addMember(conditions, body);
+    let data = [];
+    if(isInvited !=null){
+      data = isInvited;
+    }else
+    data = await tribeServiceProvider.addMember(conditions, body);
     if (data != null) {
-      code = 204;
+      code = 200;
       status = 'success';
       msg = serverMessages.SUCCESS_ADDED;
     } else {
@@ -113,7 +118,10 @@ const InviteMember = async (req, res, next) => {
 
 }
 const inviteLink  = async (req,res) =>{
-  res.render('index', { title: 'Express' });
+  var tribeId = req.params.tribeId;
+  let tribe = await tribeServiceProvider.getOne({_id:ObjectId(tribeId)});
+  console.log(tribe);
+  res.render('index', { title: 'Welcome To Flick Extension',tribe:tribe });
 }
 const addPost = async (req, res, next) => {
   try {
@@ -311,7 +319,7 @@ const acceptInvitition = async (req, res, next) => {
       isValidRequest = false;
       sharedService.setError('tribeId', 'Tribe Id is missing in parametes');
     }
-    memberId = req.access_token._id;
+    let memberId = req.access_token._id;
     if (!isValidRequest) {
       return res
         .json({
@@ -324,16 +332,17 @@ const acceptInvitition = async (req, res, next) => {
     let conditions = {
       _id: ObjectId(req.params.tribeId)
     };
-    conditions['members'] = { $elemMatch: { "_id": ObjectId(memberId) } };
+    conditions['members'] = { $elemMatch: { "userId": ObjectId(memberId) } };
     let code = 200;
     let msg = "";
     let status = 'failure';
     let postData = {};
     postData["members.$.status"] = "accepted";
     postData["members.$.joinedOn"] = new Date();
-    console.log(postData);
+    console.log(conditions);
 
     let data = await tribeServiceProvider.updateMember(conditions, postData);
+    console.log(data)
     if (data != null) {
       code = 204;
       status = 'success';
@@ -452,6 +461,7 @@ const getCustomerTribe = async (req, res) => {
     }
     let aggreate = sharedService.bindQuery(conditions);
     //aggreate.push({$project:{tribeName:1}});
+    aggreate.push({$lookup: {"from": "users","localField": "members.userId","foreignField": "_id", "as": "members" } });
     var data = await tribeServiceProvider.getAll(aggreate);
     res.status(200)
       .json({
