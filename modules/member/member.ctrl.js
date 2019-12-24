@@ -13,6 +13,7 @@ const getMyTribes = async (req, res, next) => {
     let memberId = ObjectId(req.access_token._id);
     let conditions = {
       query:{
+        isDeleted:false,
         'members.userId':memberId
       }
     };

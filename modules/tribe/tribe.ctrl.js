@@ -8,6 +8,7 @@ var notiService = require('../notification/notification.service');
 const Boom = require('boom');
 var tribeServiceProvider = require('./tribe.service');
 var sharedService = require('../../shared/shared.service');
+const userService = require('../user/user.service');
 const createTribe = async (req, res, next) => {
   try {
     sharedService.resetErrors();
@@ -86,12 +87,15 @@ const InviteMember = async (req, res, next) => {
       notification:"You have new invitation to join group "+tribe.tribeName
     }
     let isInvited = await tribeServiceProvider.getOne({_id:ObjectId(req.params.tribeId),"members.userId":ObjectId(req.body.userId)});
-    await notiService.create(notification);
+   
     let data = [];
     if(isInvited !=null){
       data = isInvited;
-    }else
-    data = await tribeServiceProvider.addMember(conditions, body);
+    }else{
+      data = await tribeServiceProvider.addMember(conditions, body);
+      await notiService.create(notification);
+    }
+    
     if (data != null) {
       code = 200;
       status = 'success';
@@ -320,7 +324,7 @@ const acceptInvitition = async (req, res, next) => {
       sharedService.setError('tribeId', 'Tribe Id is missing in parametes');
     }
     let memberId = req.access_token._id;
-    if (!isValidRequest) {
+    if (!isValidRequest || req.access_token.role=="customer") {
       return res
         .json({
           code: 204,
@@ -342,9 +346,15 @@ const acceptInvitition = async (req, res, next) => {
     console.log(conditions);
 
     let data = await tribeServiceProvider.updateMember(conditions, postData);
+    let user = await userService.getOne({_id:ObjectId(memberId)});
+    let notification = {
+      userId:ObjectId(data.customerId),
+      notification:user.name+" joined "+data.tribeName+" Group"
+    }
+    await notiService.create(notification);
     console.log(data)
     if (data != null) {
-      code = 204;
+      code = 200;
       status = 'success';
       msg = serverMessages.SUCCESS_UPDATED;
     } else {
