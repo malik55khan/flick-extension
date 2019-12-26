@@ -19,5 +19,5 @@ module.exports = function (app) {
       data: null
     });
   });
-  app.get('/invit/tribe/:tribeId',tribeCtrl.inviteLink);
+  app.get('/invite/tribe/:tribeId',tribeCtrl.inviteLink);
 };
