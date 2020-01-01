@@ -220,6 +220,7 @@ const updatePost = async (req, res, next) => {
     let msg = "";
     let status = 'failure';
     let postData = {};
+    let SendNotification =  false;
     if (body.socialNetwork) {
       postData["posts.$.socialNetwork"] = body.socialNetwork;
     }
@@ -228,6 +229,7 @@ const updatePost = async (req, res, next) => {
     }
     if (body.boostType) {
       postData["posts.$.boostType"] = body.boostType;
+      SendNotification = true;
     }
     if (body.boostCampaignStarts) {
       postData["posts.$.boostCampaignStarts"] = body.boostCampaignStarts;
@@ -238,9 +240,15 @@ const updatePost = async (req, res, next) => {
 
     let data = await tribeServiceProvider.updatePost(conditions, postData);
     if (data != null) {
-      code = 204;
+      code = 200;
       status = 'success';
       msg = serverMessages.SUCCESS_UPDATED;
+      if(SendNotification){
+        await notiService.create({
+          userId:data.customerId,
+          notification:"Your post from "+data.tribeName+" Tribe has been like."
+        });
+      }
     } else {
       code = 204;
       msg = serverMessages.ERROR_DEFAULT;

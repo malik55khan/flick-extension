@@ -73,7 +73,7 @@ exports.updateTribe = (conditions={},body,isLean=false) =>{
 }
 exports.updatePost = (conditions={},body,isLean=false) =>{
   return new Promise((resolve, reject) => {
-    let Obj = Tribe.findOneAndUpdate(conditions,{$set:body},{new : true}).select({"posts": 1});
+    let Obj = Tribe.findOneAndUpdate(conditions,{$set:body},{new : true});
     if(isLean){
       Obj.lean();
     }
