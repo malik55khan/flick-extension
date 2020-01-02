@@ -16,7 +16,9 @@ var userSchema = new mongoose.Schema({
     picture: {type: String},
     isActive: {type: Boolean, default: true}, // enable/disable user login
     isDeleted:{type: Boolean, default: false},
-    isAdmin:{type: Boolean, default: false}
+    isAdmin:{type: Boolean, default: false},
+    startNow:{type: Boolean, default: true},
+    disclaimerNotRead:{type: Boolean, default: true}
 });
 userSchema.pre('save', function (next) {
     var user = this;

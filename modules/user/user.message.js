@@ -15,4 +15,5 @@ module.exports = {
     ERROR_GET_USERDATA: `Something went wrong while getting data`,
     ERROR_NO_USER: `No User Found`,
     ERROR_FINDING_EMAIL: `email does not exists`,
+    ERROR_FINDING_LOGIN: `invalid email or password`,
   };

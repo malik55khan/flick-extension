@@ -132,7 +132,7 @@ const login = async (req, res, next) => {
         code:204,
         status: 'failure',
         data: sharedService.getErrors(),
-        message: serverMessages.ERROR_GET_USERDATA
+        message: serverMessages.ERROR_FINDING_LOGIN
       });
     }
     let code =200;
@@ -142,7 +142,7 @@ const login = async (req, res, next) => {
     let user = await userServiceProvider.getOne({email:body.email},{salt:1});
     if(!_.isEmpty(user)){
       var password = crypto.pbkdf2Sync(body.password, user.salt, 1000, 64, 'sha512').toString('hex');
-      user = await userServiceProvider.getOne({email:body.email,password:password},{isActive:1,name:1,country:1,email:1,vatNumber:1,role:1},true);
+      user = await userServiceProvider.getOne({email:body.email,password:password},{},true);
       if(user!=null){
         if(user.isActive){
           code = 200;
@@ -226,10 +226,56 @@ const updateUser = async(req,res)=>{
   }
 
 }
+const updateMe = async(req,res)=>{
+  try{
+    var body = req.body;
+    sharedService.resetErrors();
+    let isValidRequest = true;
+    
+    var body = req.body;
+    if(_.isEmpty(body)){
+      isValidRequest = false;
+      sharedService.setError('requestBody','Request body is empty');
+    }
+    
+    if(!isValidRequest){
+      return res
+      .json({
+        code:204,
+        status: 'failure',
+        data: sharedService.getErrors(),
+        message: serverMessages.ERROR_GET_USERDATA
+      });
+    }
+    let userId = ObjectId(req.access_token._id);
+    let user = await userServiceProvider.update({_id:userId},body);
+    let code =200;
+    let msg = serverMessages.SUCCESS_UPDATED;
+    let status="success";
+    if(user==null){
+      code = 204;
+      msg = serverMessages.ERROR_NO_USER;
+      status="failure";
+    }
+    return res.status(code)
+        .json({
+          code:code,
+          status: status,
+          data: user,
+          message: msg
+        });
+  }catch(err){
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
 
+}
 module.exports = {
   register: register,
   login:login,
   updateUser:updateUser,
+  updateMe:updateMe,
   loginWithSocial:loginWithSocial
 };

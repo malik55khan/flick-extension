@@ -170,5 +170,5 @@ router.post('/login', db.login);
  */
 router.put('/:id',jwt.isAuthorizedToken, db.updateUser);
 router.post('/login-with-social', db.loginWithSocial)
-
+router.put('/me',jwt.isAuthorizedToken, db.updateMe);
 module.exports = router;
