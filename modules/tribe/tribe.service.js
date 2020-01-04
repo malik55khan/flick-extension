@@ -71,6 +71,21 @@ exports.updateTribe = (conditions={},body,isLean=false) =>{
     });
   });
 }
+exports.updatePostByPush = (conditions={},body,isLean=false) =>{
+  return new Promise((resolve, reject) => {
+    let Obj = Tribe.findOneAndUpdate(conditions,{$push:body},{new : true});
+    if(isLean){
+      Obj.lean();
+    }
+    Obj.exec((err, data) => {
+        if (err) {
+          return reject(err);
+        } else {
+          resolve(data);
+        }
+    });
+  });
+}
 exports.updatePost = (conditions={},body,isLean=false) =>{
   return new Promise((resolve, reject) => {
     let Obj = Tribe.findOneAndUpdate(conditions,{$set:body},{new : true});

@@ -244,10 +244,7 @@ const updatePost = async (req, res, next) => {
       status = 'success';
       msg = serverMessages.SUCCESS_UPDATED;
       if(SendNotification){
-        await notiService.create({
-          userId:data.customerId,
-          notification:"Your post from "+data.tribeName+" Tribe has been like."
-        });
+        
       }
     } else {
       code = 204;
@@ -357,7 +354,7 @@ const acceptInvitition = async (req, res, next) => {
     let user = await userService.getOne({_id:ObjectId(memberId)});
     let notification = {
       userId:ObjectId(data.customerId),
-      notification:user.name+" joined "+data.tribeName+" Group"
+      notification:user.name+" joined "+data.tribeName+" Tribe"
     }
     await notiService.create(notification);
     console.log(data)
@@ -576,6 +573,73 @@ const getCustomerTribeMembers = async (req, res) => {
     }
   }
 }
+const likePost = async (req, res, next) => {
+  try {
+    sharedService.resetErrors();
+    let isValidRequest = true;
+
+    var body = req.body;
+    if (_.isEmpty(body)) {
+      isValidRequest = false;
+      sharedService.setError('requestBody', 'Request body is empty');
+    }
+    if (_.isUndefined(req.params.tribeId) || _.isEmpty(req.params.tribeId)) {
+      isValidRequest = false;
+      sharedService.setError('tribeId', 'Tribe Id is missing in parametes');
+    }
+    if (_.isUndefined(req.params.postId) || _.isEmpty(req.params.postId)) {
+      isValidRequest = false;
+      sharedService.setError('postId', 'Post Id is missing in parametes');
+    }
+    if (!isValidRequest) {
+      return res
+        .json({
+          code: 204,
+          status: 'failure',
+          data: sharedService.getErrors(),
+          message: serverMessages.ERROR_DEFAULT
+        });
+    }
+    let conditions = {
+      _id: ObjectId(req.params.tribeId)
+    };
+    conditions['posts'] = { $elemMatch: { "_id": ObjectId(req.params.postId) } };
+    let code = 200;
+    let msg = "";
+    let status = 'failure';
+    let postData = {};
+    postData["posts.$.boostActivity"] = body;  
+
+    let data = await tribeServiceProvider.updatePostByPush(conditions, postData);
+    if (data != null) {
+      code = 200;
+      status = 'success';
+      msg = serverMessages.SUCCESS_UPDATED;
+      await notiService.create({
+        userId:data.customerId,
+        notification:"Your post from "+data.tribeName+" Tribe has been like."
+      });
+    } else {
+      code = 204;
+      msg = serverMessages.ERROR_DEFAULT;
+    }
+
+
+    res.status(200)
+      .json({
+        code: code,
+        status: status,
+        data: data,
+        message: msg
+      });
+  } catch (err) {
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+
+}
 module.exports = {
   createTribe: createTribe,
   getCustomerTribe: getCustomerTribe,
@@ -588,5 +652,6 @@ module.exports = {
   removeMe: removeMe,
   deleteTribe:deleteTribe,
   acceptInvitition: acceptInvitition,
-  inviteLink:inviteLink
+  inviteLink:inviteLink,
+  likePost:likePost
 };

@@ -265,7 +265,7 @@ router.route('/:tribeId/posts').post(jwt.isAuthorizedToken, tribeCtrl.addPost);/
  *         description: Tribe id postId is missing 
  */
 router.route('/:tribeId/posts/:postId').put(jwt.isAuthorizedToken, tribeCtrl.updatePost);//update of post by customer
-
+router.route('/:tribeId/posts/:postId/like').put(jwt.isAuthorizedToken, tribeCtrl.likePost);
 
 /**
 * @swagger

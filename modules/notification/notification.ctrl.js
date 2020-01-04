@@ -60,6 +60,32 @@ const getMyPendingNotifications = async (req, res, next) => {
     }
   }
 }
+const getMyUnreadNotifications = async (req, res, next) => {
+  try {
+    let id = ObjectId(req.access_token._id);
+    let conditions = {
+      query:{
+        'userId':id,
+        "isRead":false
+      }
+    };
+    
+    let aggregate = sharedService.bindQuery(conditions);
+    let data = await notiServiceProvider.getAll(aggregate);
+    res.status(200)
+      .json({
+        code: 200,
+        status: "success",
+        data: data.length,
+        message: serverMessages.SUCCESS_FOUND
+      });
+  }catch(err){
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+}
 const create = async (req,res)=>{
   try{
     let body = req.body;
@@ -79,16 +105,36 @@ const create = async (req,res)=>{
     }
   }
 }
-const notified = async (req,res)=>{
+const update = async (req,res)=>{
   try{
     let body = req.body;
     let conditions = {
-      //userId:ObjectId(req.access_token._id),
       _id:ObjectId(req.params.id),
       
     };
     
-    let notification = await notiServiceProvider.update(conditions,{isNotify:true});
+    let notification = await notiServiceProvider.update(conditions,body);
+    res.status(200)
+      .json({
+        code: 200,
+        status: 'success',
+        data: notification,
+        message: serverMessages.SUCCESS_UPDATED
+      });
+  }catch(err){
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+}
+const updateAll = async (req,res)=>{
+  try{
+    let body = req.body;
+    let conditions = {
+      userId:ObjectId(req.access_token._id),
+    };
+    let notification = await notiServiceProvider.update(conditions,body);
     res.status(200)
       .json({
         code: 200,
@@ -106,6 +152,8 @@ const notified = async (req,res)=>{
 module.exports = {
   getMyNotifications: getMyNotifications,
   create:create,
-  notified:notified,
+  update:update,
+  updateAll:updateAll,
+  getMyUnreadNotifications:getMyUnreadNotifications,
   getMyPendingNotifications:getMyPendingNotifications
 };

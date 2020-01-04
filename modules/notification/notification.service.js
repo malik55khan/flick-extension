@@ -39,7 +39,18 @@ exports.update = (conditions={},set={},options={new:true}) => {
           });
       });
 }
-
+exports.updateAll = (conditions={},set={},options={new:true}) => {
+  return new Promise((resolve, reject) => {
+    Model.updateAll(conditions,set,options)
+        .exec((err, notification) => {
+          if (err) {
+            return reject(err);
+          } else {
+            resolve(notification);
+          }
+        });
+    });
+}
 
 exports.getAll = (aggregate) => {
   return new Promise((resolve, reject) => {

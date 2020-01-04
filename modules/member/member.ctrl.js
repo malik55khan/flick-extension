@@ -88,13 +88,16 @@ const getMyPosts= async (req, res, next) => {
     let memberId = ObjectId(req.access_token._id);
     let conditions = {
       query:{
-        'members.userId':memberId
+        'members.userId':memberId,
+        "members.status" : "accepted"
       }
     };
+    console.log('conditions.query',conditions.query)
     if(req.query.status){
       //conditions.query.tribeActive = req.query.status == 'true' ? true : false;
     }
     let aggregate = sharedService.bindQuery(conditions);
+    console.log('aggregate',aggregate);
     let filteredPosts = [];
     let data = await tribeServiceProvider.getAll(aggregate);
     // let posts = await _.forEach(data,async (record,i)=>{
