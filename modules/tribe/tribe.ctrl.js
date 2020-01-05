@@ -9,6 +9,7 @@ const Boom = require('boom');
 var tribeServiceProvider = require('./tribe.service');
 var sharedService = require('../../shared/shared.service');
 const userService = require('../user/user.service');
+const path = require('path');
 const createTribe = async (req, res, next) => {
   try {
     sharedService.resetErrors();
@@ -123,9 +124,9 @@ const InviteMember = async (req, res, next) => {
 }
 const inviteLink  = async (req,res) =>{
   var tribeId = req.params.tribeId;
-  let tribe = await tribeServiceProvider.getOne({_id:ObjectId(tribeId)});
-  console.log(tribe);
-  res.render('index', { title: 'Welcome To Flick Extension',tribe:tribe });
+  //let tribe = await tribeServiceProvider.getOne({_id:ObjectId(tribeId)});
+  res.render('index.html');
+  //{ title: 'Welcome To Flick Extension',tribe:tribe }
 }
 const addPost = async (req, res, next) => {
   try {
