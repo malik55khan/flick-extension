@@ -1,7 +1,7 @@
 var errorMessages = [];
 var loadsh = require('lodash');
 var ObjectId = require('mongoose').Types.ObjectId;
-exports.bindQuery = function bindQuery(queryObject,defultSortBy='_id'){
+exports.bindQuery = function bindQuery(queryObject,defultSortBy='_id',order=1){
     let aggregateQuery = [];
     let query = queryObject.query || {};
     if(!loadsh.isUndefined(query._id)){
@@ -16,7 +16,7 @@ exports.bindQuery = function bindQuery(queryObject,defultSortBy='_id'){
     }
     else {
         let sort = {};
-        sort[defultSortBy] = 1;
+        sort[defultSortBy] = order;
         aggregateQuery.push({ $sort: sort });
     }
     if (queryObject.offSet && queryObject.limit) {

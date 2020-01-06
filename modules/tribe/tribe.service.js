@@ -131,7 +131,21 @@ exports.getOne = (conditions={},projection={},isLean=false) => {
       });
     });
 }
-
+exports.get = (conditions={},projection={},isLean=false) => {
+  return new Promise((resolve, reject) => {
+      let userObj = Tribe.find(conditions,projection).select({"posts.boostActivity":1})
+      if(isLean){
+        userObj.lean();
+      }
+      userObj.exec((err, user) => {
+          if (err) {
+            return reject(err);
+          } else {
+            resolve(user);
+          }
+      });
+    });
+}
 exports.getAll = (aggregate) => {
   return new Promise((resolve, reject) => {
     Tribe.aggregate(aggregate).exec((err, data) => {

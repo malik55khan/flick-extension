@@ -12,7 +12,8 @@ var userSchema = new mongoose.Schema({
     phoneNumber:{type:String},
     country: {type: String},
     vatNumber: {type: String},
-    role:{type:String,enum:["admin","customer",'member'],default:"member"},
+    role:{type:String,enum:["customer",'member'],default:"member"},
+    subscriptionType:{type:String,enum:["free",'paid'],default:"free"},
     picture: {type: String},
     isActive: {type: Boolean, default: true}, // enable/disable user login
     isDeleted:{type: Boolean, default: false},

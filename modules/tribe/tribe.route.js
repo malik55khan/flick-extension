@@ -366,5 +366,5 @@ router.route(`/:tribeId/members`).delete(jwt.isAuthorizedToken,tribeCtrl.removeM
  *         description: Tribe id is missing 
  */
 router.route(`/:tribeId`).delete(jwt.isAuthorizedToken,tribeCtrl.deleteTribe); //- remove me from the tribe
-
+router.route(`/:tribeId`).put(jwt.isAuthorizedToken,tribeCtrl.updateTribe);
 module.exports = router;

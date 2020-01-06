@@ -99,7 +99,7 @@ const getMyPosts= async (req, res, next) => {
     let aggregate = sharedService.bindQuery(conditions);
     console.log('aggregate',aggregate);
     let filteredPosts = [];
-    let data = await tribeServiceProvider.getAll(aggregate);
+    let data = await tribeServiceProvider.getAll(aggregate,'created_at',-1);
     // let posts = await _.forEach(data,async (record,i)=>{
     //   await _.forEach(record.posts,async (post,j)=>{
     //     let boostActivity =  _.filter(post.boostActivity,(boostActivity)=>{
@@ -111,6 +111,33 @@ const getMyPosts= async (req, res, next) => {
     //     }
     //   });
     // });
+    res.status(200)
+      .json({
+        code: 200,
+        status: "success",
+        data: data,
+        message: serverMessages.SUCCESS_FOUND
+      });
+  }catch(err){
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+}
+const getMyLikedPost = async (req, res, next) => {
+  try {
+    let userId = ObjectId(req.access_token._id);
+    let conditions = {
+      query:{
+        "isDeleted" : false
+      }
+    };
+    let aggregate = sharedService.bindQuery(conditions);
+    aggregate.push({$unwind:"$posts"});
+    aggregate.push({$unwind:"$posts.boostActivity"});
+    aggregate.push({$match:{"posts.boostActivity.userId":userId}},);
+    let data = await tribeServiceProvider.getAll(aggregate,'created_at',-1);
     res.status(200)
       .json({
         code: 200,
@@ -169,6 +196,7 @@ const getMemberPosts = async (req, res, next) => {
     }
   }
 }
+
 const getTribe = async (req, res, next) => {
   try {
     let memberId = ObjectId(req.access_token._id);
@@ -184,7 +212,7 @@ const getTribe = async (req, res, next) => {
     }
     let aggregate = sharedService.bindQuery(conditions);
     console.log(aggregate);
-    let data = await tribeServiceProvider.getAll(aggregate);
+    let data = await tribeServiceProvider.getAll(aggregate,'tribeCreated',-1);
     console.log(data)
     res.status(200)
       .json({
@@ -204,6 +232,7 @@ module.exports = {
   getMemberTribe: getMemberTribe,
   getMyTribes:getMyTribes,
   getMemberPosts:getMemberPosts,
+  getMyLikedPost:getMyLikedPost,
   getMyPosts:getMyPosts,
   getTribe:getTribe
 };

@@ -609,6 +609,7 @@ const likePost = async (req, res, next) => {
     let msg = "";
     let status = 'failure';
     let postData = {};
+    body.date = new Date();
     postData["posts.$.boostActivity"] = body;  
 
     let data = await tribeServiceProvider.updatePostByPush(conditions, postData);
@@ -641,8 +642,31 @@ const likePost = async (req, res, next) => {
   }
 
 }
+const updateTribe = async (req,res)=>{
+  try{
+    let body = req.body;
+    let conditions = {
+      _id:ObjectId(req.params.tribeId),
+    };
+    
+    let data = await tribeServiceProvider.updateTribe(conditions,body);
+    res.status(200)
+      .json({
+        code: 200,
+        status: 'success',
+        data: data,
+        message: serverMessages.SUCCESS_UPDATED
+      });
+  }catch(err){
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+}
 module.exports = {
   createTribe: createTribe,
+  updateTribe: updateTribe,
   getCustomerTribe: getCustomerTribe,
   getCustomerTribeMembers:getCustomerTribeMembers,
   getCustomerTribeById: getCustomerTribeById,

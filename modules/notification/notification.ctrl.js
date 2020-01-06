@@ -11,13 +11,15 @@ const getMyNotifications = async (req, res, next) => {
     let conditions = {
       query:{
         'userId':id
-      }
+      },
+      limit:20,
+      offSet:1
     };
     
-    let aggregate = sharedService.bindQuery(conditions);
+    let aggregate = sharedService.bindQuery(conditions,'created_at',-1);
     console.log(aggregate);
     let data = await notiServiceProvider.getAll(aggregate);
-    console.log(data)
+    
     res.status(200)
       .json({
         code: 200,
@@ -42,7 +44,7 @@ const getMyPendingNotifications = async (req, res, next) => {
       }
     };
     
-    let aggregate = sharedService.bindQuery(conditions);
+    let aggregate = sharedService.bindQuery(conditions,'created_at');
     console.log(aggregate);
     let data = await notiServiceProvider.getAll(aggregate);
     console.log(data)
