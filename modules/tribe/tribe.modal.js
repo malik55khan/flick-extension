@@ -35,7 +35,7 @@ var userSchema = new mongoose.Schema({
         },
         boostActivity : [
           {
-            userId :  {type: mongoose.Schema.Types.ObjectId, ref: 'users',unique:true},
+            userId :  {type: mongoose.Schema.Types.ObjectId, ref: 'users'},
             pending : {type:Boolean},
             date:{type:Date}
           }
