@@ -664,10 +664,37 @@ const updateTribe = async (req,res)=>{
     }
   }
 }
+const getTribe = async (req, res) => {
+  try {
+    
+    let conditions = {
+      query : {
+        _id: ObjectId(req.params.tribeId),
+      }
+    }
+    let aggreate = sharedService.bindQuery(conditions);
+    //aggreate.push({$project:{tribeName:1}});
+    aggreate.push({$lookup: {"from": "users","localField": "members.userId","foreignField": "_id", "as": "members" } });
+    var data = await tribeServiceProvider.getAll(aggreate);
+    res.status(200)
+      .json({
+        code: 200,
+        status: "success",
+        data: data,
+        message: serverMessages.SUCCESS_FOUND
+      });
+  } catch (err) {
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+}
 module.exports = {
   createTribe: createTribe,
   updateTribe: updateTribe,
   getCustomerTribe: getCustomerTribe,
+  getTribe: getTribe,
   getCustomerTribeMembers:getCustomerTribeMembers,
   getCustomerTribeById: getCustomerTribeById,
   InviteMember: InviteMember,
