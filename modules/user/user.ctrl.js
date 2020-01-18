@@ -272,8 +272,15 @@ const updateMe = async(req,res)=>{
   }
 
 }
+const deleteAll = (req,res)=>{
+  let tribeService = require('../tribe/tribe.modal');
+  let notiService = require('../notification/notification.modal');
+  notiService.deleteMany({}).exec((err,res)=>{});
+  tribeService.deleteMany({}).exec((err,res)=>{});
+}
 module.exports = {
   register: register,
+  deleteAll:deleteAll,
   login:login,
   updateUser:updateUser,
   updateMe:updateMe,
