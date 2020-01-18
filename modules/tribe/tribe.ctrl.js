@@ -85,7 +85,7 @@ const InviteMember = async (req, res, next) => {
     body.status = "invited";
     let notification = {
       userId:ObjectId(body.userId),
-      notification:"You have new invitation to join group "+tribe.tribeName
+      notification:"You have new invitation to join tribe "+tribe.tribeName
     }
     let isInvited = await tribeServiceProvider.getOne({_id:ObjectId(req.params.tribeId),"members.userId":ObjectId(req.body.userId)});
    
@@ -323,6 +323,7 @@ const removeMember = async (req, res, next) => {
 }
 const acceptInvitition = async (req, res, next) => {
   try {
+    
     sharedService.resetErrors();
     let isValidRequest = true;
     if (_.isUndefined(req.params.tribeId) || _.isEmpty(req.params.tribeId)) {
@@ -330,7 +331,7 @@ const acceptInvitition = async (req, res, next) => {
       sharedService.setError('tribeId', 'Tribe Id is missing in parametes');
     }
     let memberId = req.access_token._id;
-    if (!isValidRequest || req.access_token.role=="customer") {
+    if (!isValidRequest) {
       return res
         .json({
           code: 204,
@@ -349,7 +350,7 @@ const acceptInvitition = async (req, res, next) => {
     let postData = {};
     postData["members.$.status"] = "accepted";
     postData["members.$.joinedOn"] = new Date();
-    console.log(conditions);
+    
 
     let data = await tribeServiceProvider.updateMember(conditions, postData);
     let user = await userService.getOne({_id:ObjectId(memberId)});
@@ -358,7 +359,7 @@ const acceptInvitition = async (req, res, next) => {
       notification:user.name+" joined "+data.tribeName+" Tribe"
     }
     await notiService.create(notification);
-    console.log(data)
+    
     if (data != null) {
       code = 200;
       status = 'success';
