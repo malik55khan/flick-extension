@@ -124,8 +124,13 @@ const InviteMember = async (req, res, next) => {
 }
 const inviteLink  = async (req,res) =>{
   var tribeId = req.params.tribeId;
-  //let tribe = await tribeServiceProvider.getOne({_id:ObjectId(tribeId)});
-  res.render('index.html');
+  let tribe = await tribeServiceProvider.getOne({_id:ObjectId(tribeId)});
+  console.log('tribe',tribe);
+  let name = "Welcome to Flick";
+  if(tribe){
+    name = tribe.tribeName;
+  }
+  res.render('index.html',{tribe:name});
   //{ title: 'Welcome To Flick Extension',tribe:tribe }
 }
 const addPost = async (req, res, next) => {
