@@ -62,7 +62,7 @@ exports.generateJwt = function (user) {
       _id: user._id,
       email: user.email,
       role: user.role,
-  }, CONFIG.jwtSecret,{expiresIn: '24h'}); // DO NOT KEEP YOUR SECRET IN THE CODE!
+  }, CONFIG.jwtSecret,{expiresIn: '240h'}); // DO NOT KEEP YOUR SECRET IN THE CODE!
 
 };
 
