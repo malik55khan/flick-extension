@@ -302,9 +302,9 @@ const removeMember = async (req, res, next) => {
 
     let data = await tribeServiceProvider.removeMember(ObjectId(req.params.tribeId), ObjectId(req.params.memberId));
     if (data != null) {
-      code = 204;
+      code = 200;
       status = 'success';
-      msg = serverMessages.SUCCESS_ADDED;
+      msg = serverMessages.SUCCESS_UPDATED;
     } else {
       code = 204;
       msg = serverMessages.ERROR_DEFAULT;

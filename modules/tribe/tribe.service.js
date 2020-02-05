@@ -29,7 +29,8 @@ exports.addMember = (conditions={},body,isLean=false) =>{
 }
 exports.removeMember = (tribeId,memberId) =>{
   return new Promise((resolve, reject) => {
-    let Obj = Tribe.findByIdAndUpdate(tribeId,{$pull:{"members":{_id:memberId}}},{new:true});
+    console.log(tribeId,memberId);
+    let Obj = Tribe.findOneAndUpdate({_id:tribeId},{$pull:{"members":{userId:memberId}}},{new:true});
     
     Obj.exec((err, data) => {
         if (err) {
