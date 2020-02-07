@@ -273,6 +273,62 @@ const updatePost = async (req, res, next) => {
   }
 
 }
+const deleteMembers = async (req, res, next) => {
+  try {
+    sharedService.resetErrors();
+    let isValidRequest = true;
+    console.log(req.body)
+    if (_.isUndefined(req.params.tribeId) || _.isEmpty(req.params.tribeId)) {
+      isValidRequest = false;
+      sharedService.setError('tribeId', 'Tribe Id is missing in parametes');
+    }
+    if (_.isUndefined(req.body.membersIds) || _.isEmpty(req.body.membersIds)) {
+      isValidRequest = false;
+      sharedService.setError('body.ids', 'Member Ids is missing in body');
+    }
+
+    if (!isValidRequest) {
+      return res
+        .json({
+          code: 204,
+          status: 'failure',
+          data: sharedService.getErrors(),
+          message: serverMessages.ERROR_DEFAULT
+        });
+    }
+    let code = 200;
+    let msg = "";
+    let status = 'failure';
+    let tribeId = ObjectId(req.params.tribeId);
+    let data=null;
+    let membersIds = req.body.membersIds.split('@');
+    for(let i=0;i<membersIds.length;i++){
+      data = await tribeServiceProvider.removeMember(tribeId, ObjectId(membersIds[i]));
+    }
+    if (data != null) {
+      code = 200;
+      status = 'success';
+      msg = serverMessages.SUCCESS_UPDATED;
+    } else {
+      code = 204;
+      msg = serverMessages.ERROR_DEFAULT;
+    }
+
+
+    res.status(200)
+      .json({
+        code: code,
+        status: status,
+        data: data,
+        message: msg
+      });
+  } catch (err) {
+    console.log(err);
+    if (err) {
+      return next(Boom.badImplementation(err.message));
+    }
+  }
+};
 const removeMember = async (req, res, next) => {
   try {
     sharedService.resetErrors();
@@ -707,6 +763,7 @@ module.exports = {
   addPost: addPost,
   updatePost: updatePost,
   removeMember: removeMember,
+  deleteMembers:deleteMembers,
   removeMe: removeMe,
   deleteTribe:deleteTribe,
   acceptInvitition: acceptInvitition,

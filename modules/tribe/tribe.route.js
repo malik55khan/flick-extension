@@ -318,7 +318,7 @@ router.route('/:tribeId/members').put(jwt.isAuthorizedToken, tribeCtrl.acceptInv
  *         description: Tribe id, memberId is missing 
  */
 router.route('/:tribeId/members/:memberId').delete(jwt.isAuthorizedToken, tribeCtrl.removeMember);//uremove a user from the tribe;
-
+router.route('/:tribeId/delete-members').post(jwt.isAuthorizedToken, tribeCtrl.deleteMembers);
 /**
 * @swagger
  * /api/tribes/{tribeId}/members:
