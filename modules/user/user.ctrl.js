@@ -91,6 +91,7 @@ const loginWithSocial = async(req,res,next)=>{
     
     let token = userServiceProvider.generateJwt(user);
     user = _.extend({},user,{jwt:token});
+    console.log(user)
     res.status(200)
         .json({
           code:200,
