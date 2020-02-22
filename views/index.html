@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
- 
+
   <style>
     .box {
       top: 300px;
@@ -53,7 +53,8 @@
     }
 
     .btnPanel {
-      margin-top: 100px;display: none;
+      margin-top: 100px;
+      display: none;
     }
 
     .btnjoin {
@@ -81,7 +82,8 @@
       font: Regular 29px/34px Rubik;
       letter-spacing: 0;
       color: #2F3035;
-      opacity: 1;margin-top: 100px;
+      opacity: 1;
+      margin-top: 100px;
       font-size: 29px;
       display: none;
     }
@@ -93,12 +95,19 @@
     <center>
       <div class="box">
         <img src='../../logo.svg' class="middle-logo" />
-        <p class="heading">Welcome to Flick extension</p>
-        <p class="small-text">The LinkedIn tool that gets you liked a lot</p>
-        <p class="lastText">You have successfully joined this tribe!</p>
-        <div class="btnPanel">
-          <button id="btn-accept" class="btnjoin">Join the tribe</button>
-          <button id=btn-reject class="btncancel">Cancel</button>
+        <div id="not-loaded">
+          <p class="heading">Oops...looks like you're not a Flick member yet,<br>Please sign up</p>
+          <p class="small-text">Don't you have Flick yet? Download it <a style="color: black;" href="https://chrome.google.com/webstore/detail/flick/clhcjcocpeckniobhdjjpodgbjoadbpk"><b>here</b></a></p>
+
+        </div>
+        <div id="loaded" style="display: none;">
+          <p class="heading">Welcome to Flick extension</p>
+          <p class="small-text">The LinkedIn tool that gets you liked a lot</p>
+          <p class="lastText">You have successfully joined this tribe!</p>
+          <div class="btnPanel">
+            <button id="btn-accept" class="btnjoin">Join the tribe</button>
+            <button id=btn-reject class="btncancel">Cancel</button>
+          </div>
         </div>
       </div>
     </center>
