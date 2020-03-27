@@ -3,7 +3,7 @@ var ObjectId = require('mongoose').Types.ObjectId;
 var serverMessages = require('./notification.message');
 var _ = require('lodash');
 const Boom = require('boom');
-var notiServiceProvider = require('../notification/notification.service');
+var notiServiceProvider = require('./notification.service');
 var sharedService = require('../../shared/shared.service');
 const getMyNotifications = async (req, res, next) => {
   try {

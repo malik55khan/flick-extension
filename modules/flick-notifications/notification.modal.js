@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 
 var userSchema = new mongoose.Schema({
 
-    userId: {type: mongoose.Schema.Types.ObjectId, ref: 'users'},
+    userId: {type: mongoose.Schema.Types.ObjectId, ref: 'user-profiles'},
     notification:{type:String,default:""},
     isNotify: {type: Boolean, default: false}, 
     isRead: {type: Boolean, default: false}, 
@@ -12,5 +12,5 @@ var userSchema = new mongoose.Schema({
     createdAt:{type: Date}
 },{ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
 
-var modelObj = mongoose.model('Notification', userSchema);
+var modelObj = mongoose.model('flick-notificatios', userSchema);
 module.exports = modelObj;

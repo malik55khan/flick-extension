@@ -1,9 +1,9 @@
 const express = require('express');
-const userRoute = require('../modules/user/user.route');
-const tribeRoute = require('../modules/tribe/tribe.route');
+const userRoute = require('../modules/user-profiles/user.route');
+const tribeRoute = require('../modules/flick-tribes/tribe.route');
 const memberRoute = require('../modules/member/member.route');
-const tribeCtrl = require('../modules/tribe/tribe.ctrl');
-const notificationRoute = require('../modules/notification/notification.route');
+const tribeCtrl = require('../modules/flick-tribes/tribe.ctrl');
+const notificationRoute = require('../modules/flick-notifications/notification.route');
 module.exports = function (app) {
  
   const router = express.Router();

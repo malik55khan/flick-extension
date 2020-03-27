@@ -4,7 +4,7 @@ var uniqueValidator = require('mongoose-unique-validator');
 
 var userSchema = new mongoose.Schema({
 
-    customerId : {type: mongoose.Schema.Types.ObjectId, ref: 'users'},
+    customerId : {type: mongoose.Schema.Types.ObjectId, ref: 'user-profiles'},
     tribeName : {type: String,required:"Tribe name is required"},
     tribeDescription : {type: String},
     tribeCreated : {type: Date},
@@ -45,5 +45,5 @@ var userSchema = new mongoose.Schema({
     
 });
 
-var Tribe = mongoose.model('tribes', userSchema);
+var Tribe = mongoose.model('flick-tribes', userSchema);
 module.exports = Tribe;

@@ -32,5 +32,5 @@ userSchema.pre('save', function (next) {
 },{ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
 
 
-var modelObj = mongoose.model('User', userSchema);
+var modelObj = mongoose.model('user-profiles', userSchema);
 module.exports = modelObj;

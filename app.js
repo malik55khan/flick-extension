@@ -29,8 +29,8 @@ var options = {
   swaggerDefinition: swaggerDefinition,
   // path to the API docs
   apis: [
-    './modules/user/user.route.js',
-    './modules/tribe/tribe.route.js',
+    './modules/user-profiles/user.route.js',
+    './modules/flick-tribes/tribe.route.js',
     './modules/member/member.route.js',
   ],
 };

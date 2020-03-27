@@ -4,11 +4,11 @@ var crypto = require('crypto');
 var serverMessages = require('./tribe.message');
 var _ = require('lodash');
 var validator = require("email-validator");
-var notiService = require('../notification/notification.service');
+var notiService = require('../flick-notifications/notification.service');
 const Boom = require('boom');
 var tribeServiceProvider = require('./tribe.service');
 var sharedService = require('../../shared/shared.service');
-const userService = require('../user/user.service');
+const userService = require('../user-profiles/user.service');
 const path = require('path');
 const createTribe = async (req, res, next) => {
   try {
@@ -539,7 +539,7 @@ const getCustomerTribe = async (req, res) => {
     }
     let aggreate = sharedService.bindQuery(conditions);
     //aggreate.push({$project:{tribeName:1}});
-    aggreate.push({$lookup: {"from": "users","localField": "members.userId","foreignField": "_id", "as": "members" } });
+    aggreate.push({$lookup: {"from": "user-profiles","localField": "members.userId","foreignField": "_id", "as": "members" } });
     var data = await tribeServiceProvider.getAll(aggreate);
     res.status(200)
       .json({
@@ -738,7 +738,7 @@ const getTribe = async (req, res) => {
     }
     let aggreate = sharedService.bindQuery(conditions);
     //aggreate.push({$project:{tribeName:1}});
-    aggreate.push({$lookup: {"from": "users","localField": "members.userId","foreignField": "_id", "as": "members" } });
+    aggreate.push({$lookup: {"from": "user-profiles","localField": "members.userId","foreignField": "_id", "as": "members" } });
     var data = await tribeServiceProvider.getAll(aggreate);
     res.status(200)
       .json({

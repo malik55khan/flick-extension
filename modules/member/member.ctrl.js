@@ -6,7 +6,7 @@ var _ = require('lodash');
 var validator = require("email-validator");
 
 const Boom = require('boom');
-var tribeServiceProvider = require('../tribe/tribe.service');
+var tribeServiceProvider = require('../flick-tribes/tribe.service');
 var sharedService = require('../../shared/shared.service');
 const getMyTribes = async (req, res, next) => {
   try {
