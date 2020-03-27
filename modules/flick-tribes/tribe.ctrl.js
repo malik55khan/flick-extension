@@ -676,14 +676,14 @@ const likePost = async (req, res, next) => {
 
     let data = await tribeServiceProvider.updatePostByPush(conditions, postData);
     let user = await userService.getOne({_id:ObjectId(body.userId)});
-    let userName = user.nickname|| user.name;
+    let userName = user.nickname || user.name;
     if (data != null) {
       code = 200;
       status = 'success';
       msg = serverMessages.SUCCESS_UPDATED;
       await notiService.create({
         userId:data.customerId,
-        notification:"Your post from "+data.tribeName+" Tribe has been liked by "+user.userName
+        notification:"Your post from "+data.tribeName+" Tribe has been liked by "+userName
       });
     } else {
       code = 204;
